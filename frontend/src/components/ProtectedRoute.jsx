@@ -9,17 +9,18 @@ export default function ProtectedRoute({ children }) {
 
   useEffect(() => {
     auth().catch(() => setIsAuthorized(false));
+    // refresh()
   }, []);
 
   const refresh = async () => {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+    
     try {
       const res = await api.post("/bf/token/refresh/", {
         refresh: refreshToken,
       });
       if (res.status === 200) {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
-        console.log(res.data.access);
         setIsAuthorized(true);
       } else {
         setIsAuthorized(false);
@@ -32,6 +33,7 @@ export default function ProtectedRoute({ children }) {
 
   const auth = async () => {
     const token = localStorage.getItem(ACCESS_TOKEN);
+  
     if (!token) {
       setIsAuthorized(false);
       return;
@@ -52,3 +54,5 @@ export default function ProtectedRoute({ children }) {
   }
   return isAuthorized ? children : <Navigate to="/login" />;
 }
+
+
